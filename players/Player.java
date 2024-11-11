@@ -7,7 +7,7 @@ import pieces.Piece;
  * Represents a player in the game.
  */
 public class Player {
-    private String color; // either white or black 
+    private String color; // either white or black
     private ArrayList<Piece> activePieces;
 
     /**
@@ -38,8 +38,7 @@ public class Player {
         activePieces.remove(piece);
     }
 
-    // Getters
-
+    // Get stuff
     public String getColor() {
         return color;
     }

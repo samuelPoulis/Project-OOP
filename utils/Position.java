@@ -19,7 +19,7 @@ public class Position {
         this.column = column;
     }
 
-    // Getters
+    // Get
 
     public int getRow() {
         return row;
@@ -28,8 +28,6 @@ public class Position {
     public int getColumn() {
         return column;
     }
-
-    // Override equals and hashCode for proper comparison
 
     @Override
     public boolean equals(Object obj) {

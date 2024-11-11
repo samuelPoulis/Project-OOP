@@ -6,7 +6,7 @@ import utils.Position;
  * Abstract class representing a chess piece.
  */
 public abstract class Piece {
-    protected String color; // "white" or "black"
+    protected String color;
     protected Position position;
 
     /**
@@ -21,35 +21,39 @@ public abstract class Piece {
     }
 
     /**
-     * Calculates possible moves for the piece.
+     * Gets the color of the piece.
      *
-     * @return an array of possible positions
+     * @return the color ("white" or "black")
      */
-    public abstract Position[] possibleMoves();
-
-    /**
-     * Moves the piece to a new position.
-     *
-     * @param newPosition the new position to move to
-     */
-    public void move(Position newPosition) {
-        this.position = newPosition;
-    }
-
-    // Getters
-
     public String getColor() {
         return color;
     }
 
+    /**
+     * Gets the position of the piece.
+     *
+     * @return the position
+     */
     public Position getPosition() {
         return position;
     }
 
     /**
-     * Returns the string representation of the piece.
+     * Moves the piece to a new position.
      *
-     * @return a two-character string representing the piece
+     * @param newPosition the new position
      */
+    public void move(Position newPosition) {
+        this.position = newPosition;
+    }
+
+    /**
+     * Abstract method to get possible moves.
+     *
+     * @return an array of possible positions
+     */
+    public abstract Position[] possibleMoves();
+
+    @Override
     public abstract String toString();
 }

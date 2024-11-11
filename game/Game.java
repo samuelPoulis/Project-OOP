@@ -20,7 +20,7 @@ public class Game {
         play();
     }
 
-  // Game loop
+    // Game loop
     public void play() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -47,7 +47,7 @@ public class Game {
                     continue;
                 }
 
-                // Check if it's the player's own piece
+                // Check if it is the player's own piece
                 if (!board.getPiece(from).getColor().equals(currentPlayer)) {
                     System.out.println("You can only move your own pieces. Try again.");
                     continue;

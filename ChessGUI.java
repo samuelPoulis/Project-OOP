@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.URL;
+
 import board.Board;
 import pieces.Piece;
 import utils.Position;
@@ -65,11 +67,51 @@ public class ChessGUI extends JFrame {
         if (piece != null) {
             String name = piece.getClass().getSimpleName();
             String color = piece.getColor();
-            ImageIcon icon = new ImageIcon("images/" + color + name + ".png");
-            Image img = icon.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-            button.setIcon(new ImageIcon(img));
+            String imagePath = "/images/" + color + name + ".png";
+            URL imageURL = getClass().getResource(imagePath);
+
+            if (imageURL != null) {
+                ImageIcon icon = new ImageIcon(imageURL);
+                Image img = icon.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
+                button.setIcon(new ImageIcon(img));
+            } else {
+                System.err.println("Could not load image: " + imagePath);
+            }
         } else {
             button.setIcon(null);
+        }
+    }
+
+    /**
+     * Moves a piece from one position to another and updates the GUI.
+     *
+     * @param from the source position
+     * @param to   the destination position
+     */
+    private void movePiece(Position from, Position to) {
+        System.out.println("Moving piece from (" + from.getRow() + ", " + from.getColumn() + ") to (" + to.getRow()
+                + ", " + to.getColumn() + ")");
+        Piece piece = board.getPiece(from);
+        Piece targetPiece = board.getPiece(to);
+
+        if (piece != null) {
+            if (targetPiece != null && targetPiece.getColor().equals(currentPlayer)) {
+                // Can't capture own piece
+                return;
+            }
+
+            board.movePiece(from, to);
+            updateIcon(squares[from.getRow()][from.getColumn()]);
+            updateIcon(squares[to.getRow()][to.getColumn()]);
+
+            // Check if the king is captured
+            if (targetPiece != null && targetPiece instanceof pieces.King) {
+                JOptionPane.showMessageDialog(this, currentPlayer + " wins!");
+                System.exit(0);
+            }
+
+            // Switch player
+            currentPlayer = currentPlayer.equals("white") ? "black" : "white";
         }
     }
 
@@ -119,7 +161,12 @@ public class ChessGUI extends JFrame {
                 ImageIcon icon = (ImageIcon) button.getIcon();
                 dragLabel = new JLabel(icon);
                 dragLabel.setSize(icon.getIconWidth(), icon.getIconHeight());
+                Point boardPoint = SwingUtilities.convertPoint(button, e.getPoint(), boardPanel);
+                dragLabel.setLocation(
+                        boardPoint.x - dragLabel.getWidth() / 2,
+                        boardPoint.y - dragLabel.getHeight() / 2);
                 boardPanel.add(dragLabel);
+                boardPanel.setComponentZOrder(dragLabel, 0); // Bring dragLabel to the front
                 boardPanel.addMouseMotionListener(this);
             }
         }
@@ -127,7 +174,10 @@ public class ChessGUI extends JFrame {
         @Override
         public void mouseDragged(MouseEvent e) {
             if (dragLabel != null) {
-                dragLabel.setLocation(e.getX() - dragLabel.getWidth() / 2, e.getY() - dragLabel.getHeight() / 2);
+                Point boardPoint = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), boardPanel);
+                dragLabel.setLocation(
+                        boardPoint.x - dragLabel.getWidth() / 2,
+                        boardPoint.y - dragLabel.getHeight() / 2);
                 boardPanel.repaint();
             }
         }
@@ -135,51 +185,26 @@ public class ChessGUI extends JFrame {
         @Override
         public void mouseReleased(MouseEvent e) {
             if (dragLabel != null) {
-                Component component = boardPanel.getComponentAt(e.getPoint());
+                // Remove the drag label
+                boardPanel.remove(dragLabel);
+                boardPanel.repaint();
+
+                // Convert the mouse event to the boardPanel's coordinate space
+                Point boardPoint = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), boardPanel);
+                Component component = boardPanel.getComponentAt(boardPoint);
+
                 if (component instanceof SquareButton) {
                     SquareButton targetButton = (SquareButton) component;
-                    Position from = new Position(draggedPiece.getPosition().getRow(),
-                            draggedPiece.getPosition().getColumn());
+                    Position from = draggedPiece.getPosition();
                     Position to = new Position(targetButton.row, targetButton.col);
                     movePiece(from, to);
                 }
-                boardPanel.remove(dragLabel);
-                boardPanel.repaint();
+
+                // Clean up
                 draggedPiece = null;
                 dragLabel = null;
                 boardPanel.removeMouseMotionListener(this);
             }
-        }
-    }
-
-    /**
-     * Moves a piece from one position to another and updates the GUI.
-     *
-     * @param from the source position
-     * @param to   the destination position
-     */
-    private void movePiece(Position from, Position to) {
-        Piece piece = board.getPiece(from);
-        Piece targetPiece = board.getPiece(to);
-
-        if (piece != null) {
-            if (targetPiece != null && targetPiece.getColor().equals(currentPlayer)) {
-                // Can't capture own piece
-                return;
-            }
-
-            board.movePiece(from, to);
-            updateIcon(squares[from.getRow()][from.getColumn()]);
-            updateIcon(squares[to.getRow()][to.getColumn()]);
-
-            // Check if the king is captured
-            if (targetPiece != null && targetPiece instanceof pieces.King) {
-                JOptionPane.showMessageDialog(this, currentPlayer + " wins!");
-                System.exit(0);
-            }
-
-            // Switch player
-            currentPlayer = currentPlayer.equals("white") ? "black" : "white";
         }
     }
 }

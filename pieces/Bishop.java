@@ -2,9 +2,6 @@ package pieces;
 
 import utils.Position;
 
-/**
- * Represents a Bishop chess piece.
- */
 public class Bishop extends Piece {
 
     /**

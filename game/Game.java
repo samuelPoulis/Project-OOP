@@ -61,7 +61,9 @@ public class Game {
             } else {
                 System.out.println("Invalid move format. Please use the format 'E2 E4'.");
             }
+            scanner.close();
         }
+
     }
 
     /**

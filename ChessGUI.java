@@ -7,9 +7,6 @@ import board.Board;
 import pieces.Piece;
 import utils.Position;
 
-/**
- * The main GUI class for the chess game.
- */
 public class ChessGUI extends JFrame {
     private Board board;
     private JPanel boardPanel;
@@ -17,9 +14,6 @@ public class ChessGUI extends JFrame {
     private String currentPlayer;
     private SquareButton selectedSquare;
 
-    /**
-     * Constructs the Chess GUI.
-     */
     public ChessGUI() {
         board = new Board();
         board.initialize();
@@ -27,9 +21,6 @@ public class ChessGUI extends JFrame {
         initializeGUI();
     }
 
-    /**
-     * Initializes the GUI components.
-     */
     private void initializeGUI() {
         setTitle("Chess Game");
         setSize(800, 800);
@@ -115,9 +106,6 @@ public class ChessGUI extends JFrame {
         }
     }
 
-    /**
-     * Listener for square button actions.
-     */
     private class SquareListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -143,9 +131,6 @@ public class ChessGUI extends JFrame {
         }
     }
 
-    /**
-     * Listener for drag-and-drop functionality.
-     */
     private class DragListener extends MouseAdapter {
         private Piece draggedPiece;
         private JLabel dragLabel;
@@ -166,7 +151,7 @@ public class ChessGUI extends JFrame {
                         boardPoint.x - dragLabel.getWidth() / 2,
                         boardPoint.y - dragLabel.getHeight() / 2);
                 boardPanel.add(dragLabel);
-                boardPanel.setComponentZOrder(dragLabel, 0); // Bring dragLabel to the front
+                boardPanel.setComponentZOrder(dragLabel, 0); // bring dragLabel to the front
                 boardPanel.addMouseMotionListener(this);
             }
         }
@@ -185,11 +170,11 @@ public class ChessGUI extends JFrame {
         @Override
         public void mouseReleased(MouseEvent e) {
             if (dragLabel != null) {
-                // Remove the drag label
+
                 boardPanel.remove(dragLabel);
                 boardPanel.repaint();
 
-                // Convert the mouse event to the boardPanel's coordinate space
+                // Convert the mouse event to the boardPanel coordinate space
                 Point boardPoint = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), boardPanel);
                 Component component = boardPanel.getComponentAt(boardPoint);
 

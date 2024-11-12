@@ -16,7 +16,7 @@ public class Bishop extends Piece {
 
     @Override
     public Position[] possibleMoves() {
-        // Basic bishop movement logic (not fully implemented)
+
         return new Position[0];
     }
 

@@ -2,9 +2,6 @@ package pieces;
 
 import utils.Position;
 
-/**
- * Represents a Knight chess piece.
- */
 public class Knight extends Piece {
 
     /**
@@ -19,7 +16,7 @@ public class Knight extends Piece {
 
     @Override
     public Position[] possibleMoves() {
-        // Basic knight movement logic (not fully implemented)
+
         return new Position[0];
     }
 

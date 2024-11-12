@@ -2,9 +2,6 @@ package pieces;
 
 import utils.Position;
 
-/**
- * Represents a Rook chess piece.
- */
 public class Rook extends Piece {
 
     /**
@@ -19,7 +16,7 @@ public class Rook extends Piece {
 
     @Override
     public Position[] possibleMoves() {
-        // Basic rook movement logic (not fully implemented)
+
         return new Position[0];
     }
 

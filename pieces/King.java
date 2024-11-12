@@ -2,7 +2,6 @@ package pieces;
 
 import utils.Position;
 
-
 public class King extends Piece {
 
     /**
@@ -17,7 +16,7 @@ public class King extends Piece {
 
     @Override
     public Position[] possibleMoves() {
-        // Basic king movement logic (not fully implemented)
+
         return new Position[0];
     }
 

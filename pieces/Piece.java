@@ -2,9 +2,6 @@ package pieces;
 
 import utils.Position;
 
-/**
- * Abstract class representing a chess piece.
- */
 public abstract class Piece {
     protected String color;
     protected Position position;

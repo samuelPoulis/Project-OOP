@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
-
+import java.util.List;
 import board.Board;
 import pieces.Piece;
 import utils.Position;
@@ -80,18 +80,32 @@ public class ChessGUI extends JFrame {
      * @param to   the destination position
      */
     private void movePiece(Position from, Position to) {
-        System.out.println("Moving piece from (" + from.getRow() + ", " + from.getColumn() + ") to (" + to.getRow()
-                + ", " + to.getColumn() + ")");
+        System.out.println("Attempting to move piece from " + from + " to " + to);
         Piece piece = board.getPiece(from);
         Piece targetPiece = board.getPiece(to);
 
         if (piece != null) {
-            if (targetPiece != null && targetPiece.getColor().equals(currentPlayer)) {
-                // Can't capture own piece
+            // Validate the move
+            List<Position> validMoves = piece.possibleMoves(board);
+            if (!validMoves.contains(to)) {
+                System.out.println("Invalid move for " + piece.getClass().getSimpleName());
+                JOptionPane.showMessageDialog(this, "Invalid move!");
                 return;
             }
 
+            if (targetPiece != null && targetPiece.getColor().equals(currentPlayer)) {
+                // Can't capture own piece
+                JOptionPane.showMessageDialog(this, "Cannot capture your own piece!");
+                return;
+            }
+
+            // Move the piece on the board
             board.movePiece(from, to);
+
+            // Update the piece's position
+            piece.move(to);
+
+            // Update GUI icons
             updateIcon(squares[from.getRow()][from.getColumn()]);
             updateIcon(squares[to.getRow()][to.getColumn()]);
 

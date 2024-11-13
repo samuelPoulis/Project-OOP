@@ -1,4 +1,3 @@
-
 package utils;
 
 /**
@@ -19,8 +18,7 @@ public class Position {
         this.column = column;
     }
 
-    // Get
-
+    // Getters
     public int getRow() {
         return row;
     }
@@ -29,6 +27,12 @@ public class Position {
         return column;
     }
 
+    /**
+     * Checks if this position is equal to another object.
+     *
+     * @param obj the object to compare
+     * @return true if the positions are the same, false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -39,8 +43,23 @@ public class Position {
         return row == position.row && column == position.column;
     }
 
+    /**
+     * Generates a hash code for this position.
+     *
+     * @return the hash code
+     */
     @Override
     public int hashCode() {
         return 31 * row + column;
+    }
+
+    /**
+     * Returns a string representation of the position.
+     *
+     * @return the position as a string
+     */
+    @Override
+    public String toString() {
+        return "(" + row + ", " + column + ")";
     }
 }

@@ -3,6 +3,10 @@ package board;
 import pieces.*;
 import utils.Position;
 
+import java.util.ArrayList;
+import java.util.List;
+import utils.Move;
+
 /**
  * Represents the chessboard.
  */
@@ -60,6 +64,16 @@ public class Board {
     }
 
     /**
+     * Sets a piece at the specified position.
+     *
+     * @param position the position on the board
+     * @param piece    the piece to place
+     */
+    public void setPiece(Position position, Piece piece) {
+        squares[position.getRow()][position.getColumn()] = piece;
+    }
+
+    /**
      * Moves a piece from one position to another.
      *
      * @param from the source position
@@ -104,5 +118,125 @@ public class Board {
         int row = position.getRow();
         int col = position.getColumn();
         return row >= 0 && row < 8 && col >= 0 && col < 8;
+    }
+
+    /**
+     * Finds the position of the king of the specified color.
+     *
+     * @param color the color of the king ("white" or "black")
+     * @return the position of the king, or null if not found
+     */
+    public Position findKingPosition(String color) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = squares[row][col];
+                if (piece instanceof King && piece.getColor().equals(color)) {
+                    return new Position(row, col);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the king of the specified color is in check.
+     *
+     * @param color the color to check ("white" or "black")
+     * @return true if in check, false otherwise
+     */
+    public boolean isInCheck(String color) {
+        Position kingPosition = findKingPosition(color);
+        if (kingPosition == null) {
+            return false; // King not found, game over
+        }
+        String opponentColor = opponentColor(color);
+        List<Piece> opponentPieces = getPiecesOfColor(opponentColor);
+
+        for (Piece piece : opponentPieces) {
+            List<Position> moves = piece.possibleMoves(this);
+            if (moves.contains(kingPosition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the player of the specified color is in checkmate.
+     *
+     * @param color the color to check ("white" or "black")
+     * @return true if in checkmate, false otherwise
+     */
+    public boolean isCheckmate(String color) {
+        if (!isInCheck(color)) {
+            return false;
+        }
+        List<Move> legalMoves = getAllLegalMoves(color);
+        return legalMoves.isEmpty();
+    }
+
+    /**
+     * Gets all legal moves for the player of the specified color.
+     *
+     * @param color the color of the player ("white" or "black")
+     * @return a list of legal moves
+     */
+    public List<Move> getAllLegalMoves(String color) {
+        List<Move> legalMoves = new ArrayList<>();
+        List<Piece> pieces = getPiecesOfColor(color);
+
+        for (Piece piece : pieces) {
+            List<Position> moves = piece.possibleMoves(this);
+            for (Position to : moves) {
+                Position from = piece.getPosition();
+
+                // Simulate the move
+                Piece capturedPiece = squares[to.getRow()][to.getColumn()];
+                squares[to.getRow()][to.getColumn()] = piece;
+                squares[from.getRow()][from.getColumn()] = null;
+                piece.move(to);
+
+                boolean inCheck = isInCheck(color);
+
+                // Undo the move
+                squares[from.getRow()][from.getColumn()] = piece;
+                squares[to.getRow()][to.getColumn()] = capturedPiece;
+                piece.move(from);
+
+                if (!inCheck) {
+                    legalMoves.add(new Move(from, to));
+                }
+            }
+        }
+        return legalMoves;
+    }
+
+    /**
+     * Gets all pieces of the specified color.
+     *
+     * @param color the color of the pieces ("white" or "black")
+     * @return a list of pieces
+     */
+    public List<Piece> getPiecesOfColor(String color) {
+        List<Piece> pieces = new ArrayList<>();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = squares[row][col];
+                if (piece != null && piece.getColor().equals(color)) {
+                    pieces.add(piece);
+                }
+            }
+        }
+        return pieces;
+    }
+
+    /**
+     * Gets the opponent's color.
+     *
+     * @param color the player's color
+     * @return the opponent's color
+     */
+    public String opponentColor(String color) {
+        return color.equals("white") ? "black" : "white";
     }
 }

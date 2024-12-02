@@ -4,8 +4,9 @@ import java.awt.event.*;
 import java.net.URL;
 import java.util.List;
 import board.Board;
-import pieces.Piece;
+import pieces.*;
 import utils.Position;
+import utils.Move;
 
 public class ChessGUI extends JFrame {
     private Board board;
@@ -82,22 +83,24 @@ public class ChessGUI extends JFrame {
     private void movePiece(Position from, Position to) {
         System.out.println("Attempting to move piece from " + from + " to " + to);
         Piece piece = board.getPiece(from);
-        Piece targetPiece = board.getPiece(to);
 
         if (piece != null) {
-            // Validate the move
-            List<Position> validMoves = piece.possibleMoves(board);
-            if (!validMoves.contains(to)) {
-                System.out.println("Invalid move for " + piece.getClass().getSimpleName());
+            // Validate the move using all legal moves
+            List<Move> legalMoves = board.getAllLegalMoves(currentPlayer);
+            boolean isValidMove = false;
+            for (Move move : legalMoves) {
+                if (move.getFrom().equals(from) && move.getTo().equals(to)) {
+                    isValidMove = true;
+                    break;
+                }
+            }
+
+            if (!isValidMove) {
                 JOptionPane.showMessageDialog(this, "Invalid move!");
                 return;
             }
 
-            if (targetPiece != null && targetPiece.getColor().equals(currentPlayer)) {
-                // Can't capture own piece
-                JOptionPane.showMessageDialog(this, "Cannot capture your own piece!");
-                return;
-            }
+            Piece targetPiece = board.getPiece(to);
 
             // Move the piece on the board
             board.movePiece(from, to);
@@ -105,19 +108,92 @@ public class ChessGUI extends JFrame {
             // Update the piece's position
             piece.move(to);
 
+            // Handle pawn promotion
+            if (piece instanceof Pawn && (to.getRow() == 0 || to.getRow() == 7)) {
+                // Pawn promotion
+                String[] options = { "Queen", "Rook", "Bishop", "Knight" };
+                String choice = (String) JOptionPane.showInputDialog(this, "Promote pawn to:", "Pawn Promotion",
+                        JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                Piece newPiece = null;
+                switch (choice) {
+                    case "Queen":
+                        newPiece = new Queen(currentPlayer, to);
+                        break;
+                    case "Rook":
+                        newPiece = new Rook(currentPlayer, to);
+                        break;
+                    case "Bishop":
+                        newPiece = new Bishop(currentPlayer, to);
+                        break;
+                    case "Knight":
+                        newPiece = new Knight(currentPlayer, to);
+                        break;
+                    default:
+                        newPiece = new Queen(currentPlayer, to);
+                        break;
+                }
+                board.setPiece(to, newPiece);
+            }
+
             // Update GUI icons
             updateIcon(squares[from.getRow()][from.getColumn()]);
             updateIcon(squares[to.getRow()][to.getColumn()]);
 
-            // Check if the king is captured
-            if (targetPiece != null && targetPiece instanceof pieces.King) {
-                JOptionPane.showMessageDialog(this, currentPlayer + " wins!");
-                System.exit(0);
-            }
+            // Remove highlight from previous player's king
+            removeHighlightFromKing(opponentColor(currentPlayer));
 
             // Switch player
-            currentPlayer = currentPlayer.equals("white") ? "black" : "white";
+            currentPlayer = opponentColor(currentPlayer);
+
+            // Check if the current player is in check or checkmate
+            if (board.isInCheck(currentPlayer)) {
+                if (board.isCheckmate(currentPlayer)) {
+                    JOptionPane.showMessageDialog(this, opponentColor(currentPlayer) + " wins by checkmate!");
+                    System.exit(0);
+                } else {
+                    JOptionPane.showMessageDialog(this, currentPlayer + " is in check!");
+                    highlightKing(currentPlayer);
+                }
+            } else {
+                removeHighlightFromKing(currentPlayer);
+            }
         }
+    }
+
+    /**
+     * Highlights the king if it is in check.
+     *
+     * @param color the color of the king
+     */
+    private void highlightKing(String color) {
+        Position kingPos = board.findKingPosition(color);
+        if (kingPos != null) {
+            SquareButton kingButton = squares[kingPos.getRow()][kingPos.getColumn()];
+            kingButton.setBackground(Color.RED);
+        }
+    }
+
+    /**
+     * Removes the highlight from the king.
+     *
+     * @param color the color of the king
+     */
+    private void removeHighlightFromKing(String color) {
+        Position kingPos = board.findKingPosition(color);
+        if (kingPos != null) {
+            SquareButton kingButton = squares[kingPos.getRow()][kingPos.getColumn()];
+            kingButton.setBackground((kingPos.getRow() + kingPos.getColumn()) % 2 == 0 ? Color.WHITE : Color.GRAY);
+        }
+    }
+
+    /**
+     * Gets the opponent's color.
+     *
+     * @param color the player's color
+     * @return the opponent's color
+     */
+    private String opponentColor(String color) {
+        return color.equals("white") ? "black" : "white";
     }
 
     private class SquareListener implements ActionListener {
@@ -138,8 +214,8 @@ public class ChessGUI extends JFrame {
                 Position from = new Position(selectedSquare.row, selectedSquare.col);
                 Position to = new Position(button.row, button.col);
                 movePiece(from, to);
-                selectedSquare
-                        .setBackground((selectedSquare.row + selectedSquare.col) % 2 == 0 ? Color.WHITE : Color.GRAY);
+                selectedSquare.setBackground(
+                        (selectedSquare.row + selectedSquare.col) % 2 == 0 ? Color.WHITE : Color.GRAY);
                 selectedSquare = null;
             }
         }
@@ -148,6 +224,7 @@ public class ChessGUI extends JFrame {
     private class DragListener extends MouseAdapter {
         private Piece draggedPiece;
         private JLabel dragLabel;
+        private SquareButton sourceButton;
 
         @Override
         public void mousePressed(MouseEvent e) {
@@ -157,6 +234,7 @@ public class ChessGUI extends JFrame {
 
             if (piece != null && piece.getColor().equals(currentPlayer)) {
                 draggedPiece = piece;
+                sourceButton = button;
                 ImageIcon icon = (ImageIcon) button.getIcon();
                 dragLabel = new JLabel(icon);
                 dragLabel.setSize(icon.getIconWidth(), icon.getIconHeight());
@@ -202,6 +280,7 @@ public class ChessGUI extends JFrame {
                 // Clean up
                 draggedPiece = null;
                 dragLabel = null;
+                sourceButton = null;
                 boardPanel.removeMouseMotionListener(this);
             }
         }

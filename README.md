@@ -3,7 +3,7 @@
 Group Name:
 Team 12
 
-Group Members:
+Group Member(s):
 Samuel Poulis (cut14@txstate.edu)
 
 CS.3354 Fall Semester 2024 Object Oriented Programming and Design
@@ -12,7 +12,7 @@ CS.3354 Fall Semester 2024 Object Oriented Programming and Design
 ChessGUI Screenshots to Show off User interface:
 
 
-First up, we got the endgame message!
+First up, we got the endgame message! (This has since been updated to the checkmate message)
 
 ![endgame](https://github.com/user-attachments/assets/47ee5964-0849-4a13-a24b-1e6bfa6191ef)
 

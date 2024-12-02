@@ -67,3 +67,31 @@ Finally, the checkmate message:
 
 Here is the UML class diagram for the chess game, the arrows represent the structure or hiarchy of execution and the relationships between differnt components of the game:
 ![image](https://github.com/user-attachments/assets/3aaa5054-6cd6-4241-bbb8-ce7b3cabbd28)
+
+
+
+
+HOW TO RUN THE CHESS GAME:
+
+1.) Clone the repository
+2.) Navigate to the source directory and run the command 'javac board/*.java pieces/*.java utils/*.java *.java' to recompile the program for your javac version.
+3.) Use java Main.java to run the program.
+NOTE: Make sure you use the same javac and java versions to compile and run the program or you may run in to errors. 
+
+
+
+
+FEATURES CHECKLIST:
+
+- Chess game console logic
+- Board movement logic
+- Chess pieces logic for each piece type
+- Graphical User Interface (GUI) with pieces *.png files found on the internet
+- Drag and drop style user interface
+- Chess piece movement rules for check
+- Game rules logic
+- Check logic and message
+- Checkmate logic and message
+- Promotion from pawn with selection for piece type
+- Achieved Fully functional chess game with GUI
+

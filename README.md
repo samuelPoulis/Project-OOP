@@ -73,10 +73,10 @@ Here is the UML class diagram for the chess game, the arrows represent the struc
 
 HOW TO RUN THE CHESS GAME:
 
-1.) Clone the repository
-2.) Navigate to the source directory and run the command 'javac board/*.java pieces/*.java utils/*.java *.java' to recompile the program for your javac version.
-3.) Use java Main.java to run the program.
-NOTE: Make sure you use the same javac and java versions to compile and run the program or you may run in to errors. 
+- Clone the repository
+- Navigate to the source directory and run the command 'javac board/*.java pieces/*.java utils/*.java *.java' to recompile the program for your javac version.
+- Use java Main.java to run the program.
+- NOTE: Make sure you use the same javac and java versions to compile and run the program or you may run in to errors. 
 
 
 
